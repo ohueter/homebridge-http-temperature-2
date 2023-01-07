@@ -19,6 +19,7 @@
     "node": ">=16",
     "homebridge": ">=1.3.5"
   },
+  "packageManager": "pnpm@7.17.0",
   "main": "dist/index.js",
   "license": "ISC",
   "files": [
