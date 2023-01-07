@@ -1,0 +1,51 @@
+{
+  "name": "homebridge-http-temperature-2",
+  "version": "1.0.0",
+  "description": "http/s plugin for homebridge supporting temperature sensors",
+  "scripts": {
+    "lint:check": "eslint src/**.ts",
+    "lint:fix": "pnpm lint:check --fix",
+    "format": "prettier \"**/*.{cjs,mjs,ts,tsx,json}\"",
+    "format:check": "pnpm format --check",
+    "format:fix": "pnpm format --write",
+    "clean": "rimraf ./dist",
+    "build": "pnpm clean && tsc",
+    "prepublishOnly": "pnpm build",
+    "postpublish": "pnpm clean",
+    "test": "echo \"Error: no tests specified\""
+  },
+  "author": "@metbosch, Ole Hüter <hello@hueter.net>",
+  "engines": {
+    "node": ">=16",
+    "homebridge": ">=1.3.5"
+  },
+  "main": "dist/index.js",
+  "license": "ISC",
+  "files": [
+    "LICENSE",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ohueter/homebridge-http-temperature-2.git"
+  },
+  "bugs": {
+    "url": "http://github.com/ohueter/homebridge-http-temperature-2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.47.1",
+    "@typescript-eslint/parser": "^5.47.1",
+    "eslint": "^8.30.0",
+    "eslint-config-prettier": "^8.5.0",
+    "homebridge": "^1.6.0",
+    "prettier": "^2.8.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.0",
+    "node-jq": "^2.3.4",
+    "zod": "^3.20.2"
+  }
+}
