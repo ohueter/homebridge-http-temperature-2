@@ -1,5 +1,5 @@
 import type { API } from 'homebridge'
-import { HttpTemperature } from './http-temperature-service'
+import { HttpTemperature } from './temperature-plugin'
 
 export default (api: API) => {
   api.registerAccessory(
