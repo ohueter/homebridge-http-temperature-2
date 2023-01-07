@@ -1,5 +1,4 @@
 import type {
-  AccessoryConfig,
   AccessoryPlugin,
   API,
   CharacteristicGetHandler,
@@ -7,6 +6,7 @@ import type {
   Service,
 } from 'homebridge'
 import { ZodError } from 'zod'
+import type { HttpTemperatureAccessoryConfig } from './config'
 import { TemperatureService } from './temperature-service'
 
 const isNull = (value: unknown): value is null => {
@@ -26,7 +26,7 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
 
   private temperatureService: TemperatureService | null
 
-  constructor(log: Logging, config: AccessoryConfig, api: API) {
+  constructor(log: Logging, config: HttpTemperatureAccessoryConfig, api: API) {
     this.log = log
     this.api = api
 

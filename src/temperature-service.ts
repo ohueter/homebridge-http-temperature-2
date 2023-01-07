@@ -1,5 +1,4 @@
 import AbortController from 'abort-controller'
-import type { AccessoryConfig } from 'homebridge'
 import fetch, { Headers, Request, Response } from 'node-fetch'
 import jq from 'node-jq'
 import {
@@ -10,7 +9,7 @@ import {
 export class TemperatureService {
   private __currentTemperature: number | null = null
 
-  constructor(
+  private constructor(
     private config: HttpTemperatureConfig,
     callback: (currentTemperature: number | null) => void,
   ) {
@@ -28,7 +27,7 @@ export class TemperatureService {
   }
 
   static withAccessoryConfig(
-    config: AccessoryConfig,
+    config: HttpTemperatureConfig,
     callback: (currentTemperature: number | null) => void,
   ): TemperatureService {
     const result = HttpTemperatureConfigSchema.safeParse(config)
@@ -88,7 +87,7 @@ export class TemperatureService {
     }
 
     return new Request('http://', {
-      method: 'GET',
+      method: this.config.http_method,
       signal: abortController.signal,
       headers,
     })

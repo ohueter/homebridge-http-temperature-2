@@ -1,3 +1,4 @@
+import type { AccessoryConfig } from 'homebridge'
 import { z } from 'zod'
 
 export const HttpTemperatureConfigSchema = z
@@ -79,3 +80,6 @@ export const HttpTemperatureConfigSchema = z
   .strict()
 
 export type HttpTemperatureConfig = z.infer<typeof HttpTemperatureConfigSchema>
+
+export type HttpTemperatureAccessoryConfig = AccessoryConfig &
+  HttpTemperatureConfig
