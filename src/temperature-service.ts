@@ -6,6 +6,9 @@ import {
   type HttpTemperatureConfig,
 } from './config'
 
+const isNumeric = (val: unknown): val is number =>
+  typeof val === 'number' && !Number.isNaN(val)
+
 export class TemperatureService {
   private __currentTemperature: number | null = null
 
@@ -93,22 +96,25 @@ export class TemperatureService {
     })
   }
 
-  private async parseTemperatureFromResponse(
-    response: Response,
-  ): Promise<number | null> {
+  private async parseTemperatureFromResponse(response: Response) {
     const body = await response.text()
+    let temperature: number
+
     if (this.config.field_name) {
-      const result = await jq(`.${this.config.field_name} | tonumber`, body, {
+      const result = (await jq(`.${this.config.field_name} | tonumber`, body, {
         input: 'string',
         output: 'string',
-      })
-      if (typeof result === 'string') {
-        return parseFloat(result)
-      }
+      })) as string
+      temperature = parseFloat(result)
     } else {
-      return parseFloat(body)
+      temperature = parseFloat(body)
     }
-    return null
+
+    if (!isNumeric(temperature)) {
+      throw new Error(`Non-numeric response received:\n${body}`)
+    }
+
+    return temperature
   }
 
   getDeviceConfig() {
