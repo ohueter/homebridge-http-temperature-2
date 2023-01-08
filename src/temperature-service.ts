@@ -1,6 +1,6 @@
 import AbortController from 'abort-controller'
 import fetch, { Headers, Request, Response } from 'node-fetch'
-import jq from 'node-jq'
+import { run as jq } from 'node-jq'
 import {
   HttpTemperatureConfigSchema,
   type HttpTemperatureConfig,
@@ -96,15 +96,17 @@ export class TemperatureService {
   private async parseTemperatureFromResponse(
     response: Response,
   ): Promise<number | null> {
+    const body = await response.text()
     if (this.config.field_name) {
-      const json = await response.json()
-      const result = await jq.run(`.${this.config.field_name}`, json)
+      const result = await jq(`.${this.config.field_name} | tonumber`, body, {
+        input: 'string',
+        output: 'string',
+      })
       if (typeof result === 'string') {
         return parseFloat(result)
       }
     } else {
-      const text = await response.text()
-      return parseFloat(text)
+      return parseFloat(body)
     }
     return null
   }
