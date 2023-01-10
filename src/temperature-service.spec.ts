@@ -29,6 +29,10 @@ const getTemperatureServiceMethod = (
 }
 
 describe('TemperatureService', () => {
+  beforeAll(() => jest.useFakeTimers())
+
+  afterAll(() => jest.clearAllTimers())
+
   describe('parseTemperatureFromResponse()', () => {
     test.each<{
       res: string
