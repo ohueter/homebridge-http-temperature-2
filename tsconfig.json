@@ -12,5 +12,6 @@
     "noImplicitAny": true,
     "useUnknownInCatchVariables": false
   },
-  "include": ["src", "types"]
+  "include": ["src", "types"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
 }
