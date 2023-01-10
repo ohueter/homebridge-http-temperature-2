@@ -1,12 +1,13 @@
 import AbortController from 'abort-controller'
+import express from 'express'
+import http from 'http'
+import type { AddressInfo } from 'net'
 import { Response } from 'node-fetch'
 import {
   HttpTemperatureConfigSchema,
   type HttpTemperatureConfig,
 } from './config'
 import { TemperatureService } from './temperature-service'
-
-// jest.mock('abort-controller')
 
 const getConfig = (config?: Partial<HttpTemperatureConfig>) => {
   const result = HttpTemperatureConfigSchema.safeParse({
@@ -31,12 +32,34 @@ const getTemperatureServiceMethod = (
   }
 }
 
+const getHttpServer = (abortController: AbortController) => {
+  const app = express()
+
+  app.get('/', (req, res) => {
+    res.json({ temperature: 5 })
+  })
+
+  app.get('/timeout', (req, res) => {
+    setTimeout(() => res.json({ temperature: 5 }), 1000)
+  })
+
+  app.get('/invalid', (req, res) => {
+    res.send('temperature: 5')
+  })
+
+  const server = http
+    .createServer(app)
+    .listen({ port: 0, signal: abortController.signal })
+
+  return server
+}
+
 jest.useFakeTimers()
 
 describe('TemperatureService', () => {
   describe('constructor()', () => {
-    test.todo('set interval only if update_interval > 0')
     test.todo('call getTemperature() every `update_interval` miliseconds')
+    test.todo('dont set interval if update_interval == 0')
     test.todo('calls callback with current temperature')
     test.todo('calls callback with `null` on error')
   })
@@ -44,13 +67,52 @@ describe('TemperatureService', () => {
   describe('getCurrentTemperature()', () => {
     test.todo('returns the current temperature from cache')
     test.todo('fetches the current temperature if update_interval == 0')
+    test.todo('sets the current temperature to `null` on error')
   })
 
-  describe('getFetchTemperatureRequest()', () => {
-    test.todo('returns temperature for a valid response')
-    test.todo('request is aborted after timeout')
-    test.todo('returns `null` on request timeout')
-    test.todo('throws for an invalid response')
+  describe('getTemperature()', () => {
+    const abortController = new AbortController()
+    let addressInfo: AddressInfo
+
+    beforeAll(() => {
+      const server = getHttpServer(abortController)
+      addressInfo = server.address() as AddressInfo
+    })
+
+    afterAll(() => abortController.abort())
+
+    test('returns temperature for a valid response', async () => {
+      const { getTemperature } = getTemperatureServiceMethod({
+        url: `http://localhost:${addressInfo.port}`,
+      })
+      const temperature = await getTemperature()
+      expect(temperature).toBe(5)
+    })
+
+    test('request is aborted and returns `null` after timeout', async () => {
+      const abortSpy = jest.spyOn(AbortController.prototype, 'abort')
+
+      const { getTemperature } = getTemperatureServiceMethod({
+        url: `http://localhost:${addressInfo.port}/timeout`,
+        timeout: 100,
+      })
+
+      jest.useRealTimers()
+
+      const temperature = await getTemperature()
+      expect(abortSpy).toBeCalledTimes(1)
+      expect(temperature).toBe(null)
+      abortSpy.mockRestore()
+
+      jest.useFakeTimers()
+    })
+
+    test('throws for an invalid response', async () => {
+      const { getTemperature } = getTemperatureServiceMethod({
+        url: `http://localhost:${addressInfo.port}/invalid`,
+      })
+      await expect(getTemperature()).rejects.toThrow()
+    })
   })
 
   describe('getFetchTemperatureRequest()', () => {
