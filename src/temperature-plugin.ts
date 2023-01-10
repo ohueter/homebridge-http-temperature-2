@@ -1,4 +1,5 @@
 import type {
+  AccessoryConfig,
   AccessoryPlugin,
   API,
   CharacteristicGetHandler,
@@ -26,7 +27,7 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
 
   private temperatureService: TemperatureService | null
 
-  constructor(log: Logging, config: HttpTemperatureAccessoryConfig, api: API) {
+  constructor(log: Logging, config: AccessoryConfig, api: API) {
     this.log = log
     this.api = api
 
@@ -38,7 +39,7 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
 
     try {
       this.temperatureService = TemperatureService.withAccessoryConfig(
-        config,
+        config as HttpTemperatureAccessoryConfig,
         (currentTemperature) => {
           this.hapTemperatureService.updateCharacteristic(
             api.hap.Characteristic.CurrentTemperature,
