@@ -31,11 +31,9 @@ const getTemperatureServiceMethod = (
   }
 }
 
+jest.useFakeTimers()
+
 describe('TemperatureService', () => {
-  beforeAll(() => jest.useFakeTimers())
-
-  afterAll(() => jest.clearAllTimers())
-
   describe('constructor()', () => {
     test.todo('set interval only if update_interval > 0')
     test.todo('call getTemperature() every `update_interval` miliseconds')
