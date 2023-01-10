@@ -89,7 +89,7 @@ export class TemperatureService {
       )
     }
 
-    return new Request('http://', {
+    return new Request(this.config.url, {
       method: this.config.http_method,
       signal: abortController.signal,
       headers,
