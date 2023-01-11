@@ -37,7 +37,6 @@ const getConfig = (config?: Partial<HttpTemperatureConfig>) => {
 const getTemperatureServiceMethod = (
   config?: Partial<HttpTemperatureConfig>,
   callback: (currentTemperature: number | null) => void = jest.fn(),
-  service = TemperatureService,
 ) => {
   const ts = TemperatureService.withAccessoryConfig(getConfig(config), callback)
   return {
