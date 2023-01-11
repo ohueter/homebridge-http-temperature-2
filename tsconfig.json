@@ -7,11 +7,10 @@
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
+    "strictBindCallApply": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "useUnknownInCatchVariables": false
-  },
-  "include": ["src", "types"],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+  }
 }

@@ -9,7 +9,7 @@
     "format:check": "pnpm format --check",
     "format:fix": "pnpm format --write",
     "clean": "rimraf ./dist",
-    "build": "pnpm clean && tsc",
+    "build": "pnpm clean && tsc --project tsconfig.build.json",
     "prepublishOnly": "pnpm build",
     "postpublish": "pnpm clean",
     "test": "jest"
