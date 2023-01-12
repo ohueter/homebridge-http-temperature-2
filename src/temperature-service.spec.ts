@@ -9,15 +9,12 @@ import {
 } from './config'
 import { TemperatureService } from './temperature-service'
 
-// capture process.nextTick before it's mocked by jest.useFakeTimers()
-const processNextTick = process.nextTick
-
 /**
  * When an async function is awaited in a callback to setInterval() or setTimeout(),
  * jest.advanceTimersToNextTimer() triggers the execution of the callback, but the
  * Promises are only resolved in the next tick.
  */
-const flushPromises = () => new Promise((resolve) => processNextTick(resolve))
+const flushPromises = () => new Promise((resolve) => process.nextTick(resolve))
 
 const advanceTimersToNextTimerAndFlush = async () => {
   jest.advanceTimersToNextTimer()
@@ -69,14 +66,75 @@ const getHttpServer = (abortController: AbortController) => {
   return server
 }
 
-jest.useFakeTimers()
+/**
+ * Calls/awaits `fn` and returns the elapsed time.
+ * Only to be used with fake timers.
+ */
+const getElapsedTime = async <T>(fn: () => T) => {
+  const before = jest.now()
+  await fn()
+  const after = jest.now()
+  return after - before
+}
+
+jest.useFakeTimers({ doNotFake: ['nextTick'] })
 
 describe('TemperatureService', () => {
   describe('constructor()', () => {
-    test.todo('call getTemperature() every `update_interval` miliseconds')
-    test.todo('dont set interval if update_interval == 0')
-    test.todo('calls callback with current temperature')
-    test.todo('calls callback with `null` on error')
+    let getTemperatureMock: jest.SpyInstance<
+      ReturnType<typeof TemperatureService.prototype.getTemperature>
+    >
+
+    beforeAll(() => {
+      getTemperatureMock = jest
+        .spyOn(TemperatureService.prototype, 'getTemperature')
+        .mockResolvedValue(5)
+    })
+
+    afterEach(() => {
+      jest.clearAllTimers()
+      getTemperatureMock.mockClear()
+    })
+
+    afterAll(() => getTemperatureMock.mockRestore())
+
+    test('call getTemperature() every `update_interval` miliseconds', async () => {
+      const update_interval = 100000
+      expect(getTemperatureMock).toHaveBeenCalledTimes(0)
+      getTemperatureServiceMethod({
+        update_interval,
+      })
+      for (let i = 1; i <= 5; i++) {
+        const elapsed = await getElapsedTime(advanceTimersToNextTimerAndFlush)
+        expect(getTemperatureMock).toHaveBeenCalledTimes(i)
+        expect(elapsed).toBe(update_interval)
+      }
+    })
+
+    test('dont set interval if update_interval == 0', () => {
+      expect(getTemperatureMock).toHaveBeenCalledTimes(0)
+      getTemperatureServiceMethod({
+        update_interval: 0,
+      })
+      expect(getTemperatureMock).not.toHaveBeenCalled()
+    })
+
+    test('calls callback with current temperature', async () => {
+      const callback = jest.fn()
+      getTemperatureServiceMethod({}, callback)
+      expect(callback).not.toHaveBeenCalled()
+      await advanceTimersToNextTimerAndFlush()
+      expect(callback).toHaveBeenCalledWith(5)
+    })
+
+    test('calls callback with `null` on error', async () => {
+      getTemperatureMock.mockRejectedValueOnce(new Error())
+      const callback = jest.fn()
+      getTemperatureServiceMethod({}, callback)
+      expect(callback).not.toHaveBeenCalled()
+      await advanceTimersToNextTimerAndFlush()
+      expect(callback).toHaveBeenCalledWith(null)
+    })
   })
 
   describe('getCurrentTemperature()', () => {
