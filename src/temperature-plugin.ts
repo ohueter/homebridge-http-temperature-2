@@ -31,6 +31,8 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
     this.log = log
     this.api = api
 
+    log('Startet HttpTemperaturePlugin with config:', config)
+
     this.hapInformationService = new api.hap.Service.AccessoryInformation()
     this.hapTemperatureService = new api.hap.Service.TemperatureSensor()
     this.hapTemperatureService
