@@ -10,8 +10,8 @@ import { ZodError } from 'zod'
 import type { HttpTemperatureAccessoryConfig } from './config'
 import { TemperatureService } from './temperature-service'
 
-const isNull = (value: unknown): value is null => {
-  return value === null
+const isNil = (value: unknown): value is null | undefined => {
+  return value == null
 }
 
 interface HttpTemperaturePugin {
@@ -42,11 +42,18 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
     try {
       this.temperatureService = TemperatureService.withAccessoryConfig(
         config as HttpTemperatureAccessoryConfig,
-        (currentTemperature) => {
-          this.log(`Fetched temperature: ${currentTemperature}`)
+        (temperature) => {
+          if (isNil(temperature)) {
+            this.log(`Failed fetching current temperature`)
+            throw new this.api.hap.HapStatusError(
+              this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
+            )
+          }
+
+          this.log(`Fetched temperature: ${temperature}`)
           this.hapTemperatureService.updateCharacteristic(
             api.hap.Characteristic.CurrentTemperature,
-            currentTemperature,
+            temperature,
           )
         },
       )
@@ -74,14 +81,17 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
   }
 
   async getTemperature() {
-    if (isNull(this.temperatureService)) {
+    const temperature = await this.temperatureService?.getCurrentTemperature()
+
+    if (isNil(temperature)) {
+      this.log(`Failed getting current (cached) temperature`)
       throw new this.api.hap.HapStatusError(
         this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
       )
     }
 
-    const temperature = await this.temperatureService.getCurrentTemperature()
     this.log(`Current (cached) temperature: ${temperature}`)
+
     return temperature
   }
 

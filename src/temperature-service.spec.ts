@@ -297,6 +297,12 @@ describe('TemperatureService', () => {
         expected: 5,
         config: { field_name: 'data.values[0].temperature' },
       },
+      // TODO: required for compliance with @metbosch plugin
+      // {
+      //   res: '{ "data": { "values": [ { "temperature": 5 }, { "temperature": 10 } ] } }',
+      //   expected: 5,
+      //   config: { field_name: 'data.values.0.temperature' },
+      // },
     ])(
       'parses response `%s` to temperature `%f` with config `%o`',
       async ({ res, expected, config }) => {
