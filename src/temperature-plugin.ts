@@ -41,6 +41,7 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
       this.temperatureService = TemperatureService.withAccessoryConfig(
         config as HttpTemperatureAccessoryConfig,
         (currentTemperature) => {
+          this.log(`Fetched temperature: ${currentTemperature}`)
           this.hapTemperatureService.updateCharacteristic(
             api.hap.Characteristic.CurrentTemperature,
             currentTemperature,
@@ -62,6 +63,7 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
         )
     } catch (err) {
       this.temperatureService = null
+      this.log.error('Failed to initialize TemperatureService')
 
       if (err instanceof ZodError) {
         err.issues.map((issue) => this.log(`${issue.path}: ${issue.message}`))
@@ -76,7 +78,9 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
       )
     }
 
-    return await this.temperatureService.getCurrentTemperature()
+    const temperature = await this.temperatureService.getCurrentTemperature()
+    this.log(`Current (cached) temperature: ${temperature}`)
+    return temperature
   }
 
   getServices() {
