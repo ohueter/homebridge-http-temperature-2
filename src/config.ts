@@ -3,6 +3,9 @@ import { z } from 'zod'
 
 export const HttpTemperatureConfigSchema = z
   .object({
+    // From Homebridge
+    accessory: z.string().optional(),
+
     // Mandatory
     /** Endpoint URL (must start with http:// or https://). */
     url: z.string().url().min(1),
