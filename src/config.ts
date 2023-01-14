@@ -1,10 +1,12 @@
 import type { AccessoryConfig } from 'homebridge'
 import { z } from 'zod'
 
+export const ACCESSORY_NAME = 'HttpTemperature2'
+
 export const HttpTemperatureConfigSchema = z
   .object({
     // From Homebridge
-    accessory: z.string().optional(),
+    accessory: z.literal(ACCESSORY_NAME),
 
     // Mandatory
     /** Endpoint URL (must start with http:// or https://). */

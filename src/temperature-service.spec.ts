@@ -4,6 +4,7 @@ import http from 'http'
 import type { AddressInfo } from 'net'
 import { Response } from 'node-fetch'
 import {
+  ACCESSORY_NAME,
   HttpTemperatureConfigSchema,
   type HttpTemperatureConfig,
 } from './config'
@@ -23,6 +24,7 @@ const advanceTimersToNextTimerAndFlush = async () => {
 
 const getConfig = (config?: Partial<HttpTemperatureConfig>) => {
   const result = HttpTemperatureConfigSchema.safeParse({
+    accessory: ACCESSORY_NAME,
     name: 'name',
     url: 'http://localhost',
     ...config,

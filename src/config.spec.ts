@@ -8,6 +8,7 @@ describe('HttpTemperatureConfigSchema', () => {
 
   test('incorrect minimal configuration is invalid', () => {
     const result = HttpTemperatureConfigSchema.safeParse({
+      accessory: 'HttpTemperature2',
       url: '',
       name: '',
     })
@@ -16,6 +17,7 @@ describe('HttpTemperatureConfigSchema', () => {
 
   test('minimal configuration is valid', () => {
     const result = HttpTemperatureConfigSchema.safeParse({
+      accessory: 'HttpTemperature2',
       url: 'http://localhost',
       name: 'Temperature Sensor',
     })
@@ -24,6 +26,7 @@ describe('HttpTemperatureConfigSchema', () => {
 
   test('additional keys are not allowed', () => {
     const result = HttpTemperatureConfigSchema.safeParse({
+      accessory: 'HttpTemperature2',
       url: 'http://localhost',
       name: 'Temperature Sensor',
       additionalKey: 1,
@@ -33,6 +36,7 @@ describe('HttpTemperatureConfigSchema', () => {
 
   test('default values are set', () => {
     const result = HttpTemperatureConfigSchema.safeParse({
+      accessory: 'HttpTemperature2',
       url: 'http://localhost',
       name: 'Temperature Sensor',
     })
