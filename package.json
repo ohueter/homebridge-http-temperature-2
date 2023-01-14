@@ -2,6 +2,9 @@
   "name": "homebridge-http-temperature-2",
   "version": "1.0.0",
   "description": "http/s plugin for homebridge supporting temperature sensors",
+  "keywords": [
+    "homebridge-plugin"
+  ],
   "scripts": {
     "lint:check": "eslint src/**.ts",
     "lint:fix": "pnpm lint:check --fix",
