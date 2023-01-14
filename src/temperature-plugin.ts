@@ -45,9 +45,7 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
         (temperature) => {
           if (isNil(temperature)) {
             this.log(`Failed fetching current temperature`)
-            throw new this.api.hap.HapStatusError(
-              this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
-            )
+            throw new Error(`Failed fetching current temperature`)
           }
 
           this.log(`Fetched temperature: ${temperature}`)
@@ -85,9 +83,7 @@ export class HttpTemperature implements AccessoryPlugin, HttpTemperaturePugin {
 
     if (isNil(temperature)) {
       this.log(`Failed getting current (cached) temperature`)
-      throw new this.api.hap.HapStatusError(
-        this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
-      )
+      throw new Error(`Failed getting current (cached) current temperature`)
     }
 
     this.log(`Current (cached) temperature: ${temperature}`)
